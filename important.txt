@@ -1,0 +1,1 @@
+This is used by the status page to check that Blot is serving blogs!
