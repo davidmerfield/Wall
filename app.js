@@ -41,7 +41,7 @@ if (isAuthenticated()) {
   // clientID === APP_KEY per 
   // https://www.dropboxforum.com/t5/API-Support-Feedback/Javascript-SDK-CLIENT-ID/td-p/217323
   var dbx = new Dropbox.Dropbox({ clientId: APP_KEY });
-  var authUrl = dbx.getAuthenticationUrl("http://localhost:8000/");
+  var authUrl = dbx.getAuthenticationUrl(window.location);
   document.getElementById("authlink").href = authUrl;
 }
 
