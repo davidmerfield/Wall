@@ -1,13 +1,39 @@
 var APP_KEY = "zl0msi8kqsftxc5";
+
+function getAccessToken () {
+
+  if (getAccessTokenFromLocalStorage()) {
+    return getAccessTokenFromLocalStorage();
+  }
+
+  if (getAccessTokenFromUrl()) {
+    localStorage.setItem('access_token', getAccessTokenFromUrl());
+    return window.location = window.location.href.split('#')[0];
+  }
+
+  return null;
+}
+
+function logOut () {
+  localStorage.setItem('access_token', '');
+  window.location = window.location;
+}
+
 // Parses the url and gets the access token if it is in the urls hash
 function getAccessTokenFromUrl() {
   return parseQueryString(window.location.hash).access_token;
 }
+
+function getAccessTokenFromLocalStorage(){
+  return localStorage.getItem('access_token');
+}
+
 // If the user was just redirected from authenticating, the urls hash will
 // contain the access token.
 function isAuthenticated() {
-  return !!getAccessTokenFromUrl();
+  return !!getAccessToken();
 }
+
 // Render a list of items to #files
 function renderItems(items) {
   var filesContainer = document.getElementById("files");
@@ -23,10 +49,10 @@ function showPageSection(elementId) {
   document.getElementById(elementId).style.display = "block";
 }
 if (isAuthenticated()) {
-  showPageSection("authed-section");
+  showPageSection("authed");
   // Create an instance of Dropbox with the access token and use it to
   // fetch and render the files in the users root directory.
-  var dbx = new Dropbox.Dropbox({ accessToken: getAccessTokenFromUrl() });
+  var dbx = new Dropbox.Dropbox({ accessToken: getAccessToken() });
   dbx
     .filesListFolder({ path: "" })
     .then(function(response) {
@@ -36,7 +62,7 @@ if (isAuthenticated()) {
       console.error(error);
     });
 } else {
-  showPageSection("pre-auth-section");
+  showPageSection("pre-auth");
   // Set the login anchors href using dbx.getAuthenticationUrl()
   // clientID === APP_KEY per 
   // https://www.dropboxforum.com/t5/API-Support-Feedback/Javascript-SDK-CLIENT-ID/td-p/217323
@@ -45,6 +71,7 @@ if (isAuthenticated()) {
   document.getElementById("authlink").href = authUrl;
 }
 
+// Used to extract a user's access token from a URL hash
 function parseQueryString(str) {
   var ret = Object.create(null);
 
