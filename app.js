@@ -36,7 +36,7 @@ function isAuthenticated() {
 // Render a file to #file
 function renderFile(file) {
   var fileContainer = document.getElementById("file-contents");
-
+  fileContainer.innerHTML = '';
   file.fileBlob.text().then(function(text){
     fileContainer.innerHTML = text;
   });
@@ -47,6 +47,7 @@ function renderFile(file) {
 // Render a list of items to #files
 function renderItems(items) {
   var filesContainer = document.getElementById("files");
+  filesContainer.innerHTML = '';
   items.forEach(function(item) {
     var li = document.createElement("li");
     if (item[".tag"] === "folder") {
@@ -73,15 +74,29 @@ function renderItems(items) {
 function showPageSection(elementId) {
   document.getElementById(elementId).style.display = "block";
 }
+
+function hidePageSection(elementId) {
+  document.getElementById(elementId).style.display = "none";
+}
+
 if (isAuthenticated()) {
   showPageSection("authed");
+
   // Create an instance of Dropbox with the access token and use it to
   // fetch and render the files in the users root directory.
   var dbx = new Dropbox.Dropbox({ accessToken: getAccessToken(), fetch: fetch });
 
+  window.onhashchange = router;
+
+  router();
+
+  function router () {
+
   // We are routing here!
   if (parseQueryString(window.location.hash).file) {
     showPageSection("file");
+        hidePageSection("folder");
+
     dbx
       .filesDownload({
         path: parseQueryString(window.location.hash).file || ""
@@ -94,7 +109,7 @@ if (isAuthenticated()) {
       });
   } else {
     showPageSection("folder");
-
+    hidePageSection("file");
     dbx
       .filesListFolder({
         path: parseQueryString(window.location.hash).folder || ""
@@ -106,6 +121,8 @@ if (isAuthenticated()) {
         console.error(error);
       });
   }
+  }
+
 } else {
   showPageSection("pre-auth");
   // Set the login anchors href using dbx.getAuthenticationUrl()
