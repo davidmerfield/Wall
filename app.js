@@ -33,14 +33,34 @@ function isAuthenticated() {
   return !!getAccessToken();
 }
 
+// Create a blank editor to #file-content
+function newPost(){
+  hidePageSection("folder");
+  showPageSection("file");
+  renderFile('');
+}
 // Render a file to #file
 function renderFile(file) {
   var fileContainer = document.getElementById("file-contents");
   fileContainer.innerHTML = '';
-  file.fileBlob.text().then(function(text){
-    fileContainer.innerHTML = text;
-  });
+  if(file){
+    file.fileBlob.text().then(function(text){
+      fileContainer.innerHTML = marked(text);
+    });
+  }
 
+  fileContainer.focus();
+  var markdownEditor = document.querySelector(".markdown");
+  var editor = new MediumEditor('.editable',
+      { placeholder: false,
+        toolbar: {
+          buttons: ['bold', 'italic', 'underline', 'anchor', 'h1', 'h2', 'quote', 'orderedlist', 'unorderedlist']
+        },
+        extensions: {
+            markdown: new MeMarkdown(function (md) {
+              markdownEditor.textContent = md;
+    })}
+  });
     
 }
 

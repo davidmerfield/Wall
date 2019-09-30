@@ -2,6 +2,8 @@
 <head>
   <meta charset="utf-8">
   <script type="text/javascript" src="/dependencies.js"></script>
+  <link rel="stylesheet" href="css/medium-editor.min.css">
+  <link rel="stylesheet" href="css/themes/default.min.css">
   <title>Wall</title>
 </head>
 <body>
@@ -16,12 +18,13 @@
       <p>Welcome! <a href="#" onclick="logOut()">Log out</a></p>
       <hr>
       <div id="folder" style="display:none;">
-        <p><a href="/">Home</a> Below are the contents of directory:</p>
+        <p><a href="/">Home</a> <a href="#" onclick="newPost();">New</a> Below are the contents of directory:</p>
         <ul id="files"></ul>
       </div>
       <div id="file" style="display:none;">
         <p><a href="/">Home</a> Below are the contents of the file:</p>
-        <pre id="file-contents"></pre>
+        <textarea id="markdown-content" type="textarea" class="markdown" style="display: none"/></textarea>
+        <div id="file-contents" class="editable"></div>
       </div>
 
     </div>
