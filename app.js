@@ -1,5 +1,17 @@
 var APP_KEY = "zl0msi8kqsftxc5";
 
+var markdownEditor = document.querySelector(".markdown");
+var editor = new MediumEditor('.editable',
+      { placeholder: false,
+        toolbar: {
+          buttons: ['bold', 'italic', 'underline', 'anchor', 'h1', 'h2', 'quote', 'orderedlist', 'unorderedlist']
+        },
+        extensions: {
+            markdown: new MeMarkdown(function (md) {
+              markdownEditor.textContent = md;
+    })}
+  });
+
 function getAccessToken() {
   if (getAccessTokenFromLocalStorage()) {
     return getAccessTokenFromLocalStorage();
@@ -33,15 +45,10 @@ function isAuthenticated() {
   return !!getAccessToken();
 }
 
-// Create a blank editor to #file-content
-function newPost(){
-  hidePageSection("folder");
-  showPageSection("file");
-  renderFile('');
-}
 // Render a file to #file
 function renderFile(file) {
   var fileContainer = document.getElementById("file-contents");
+  fileContainer.style.display = "block";
   fileContainer.innerHTML = '';
   if(file){
     file.fileBlob.text().then(function(text){
@@ -50,18 +57,9 @@ function renderFile(file) {
   }
 
   fileContainer.focus();
-  var markdownEditor = document.querySelector(".markdown");
-  var editor = new MediumEditor('.editable',
-      { placeholder: false,
-        toolbar: {
-          buttons: ['bold', 'italic', 'underline', 'anchor', 'h1', 'h2', 'quote', 'orderedlist', 'unorderedlist']
-        },
-        extensions: {
-            markdown: new MeMarkdown(function (md) {
-              markdownEditor.textContent = md;
-    })}
-  });
-    
+  
+  hidePageSection('authed');
+  hidePageSection('pre-auth');
 }
 
 // Render a list of items to #files
@@ -99,58 +97,60 @@ function hidePageSection(elementId) {
   document.getElementById(elementId).style.display = "none";
 }
 
-if (isAuthenticated()) {
-  showPageSection("authed");
+function publishToDropbox(){
+  if (isAuthenticated()) {
+    showPageSection("authed");
 
-  // Create an instance of Dropbox with the access token and use it to
-  // fetch and render the files in the users root directory.
-  var dbx = new Dropbox.Dropbox({ accessToken: getAccessToken(), fetch: fetch });
+    // Create an instance of Dropbox with the access token and use it to
+    // fetch and render the files in the users root directory.
+    var dbx = new Dropbox.Dropbox({ accessToken: getAccessToken(), fetch: fetch });
 
-  window.onhashchange = router;
+    window.onhashchange = router;
 
-  router();
+    router();
 
-  function router () {
+    function router () {
 
-  // We are routing here!
-  if (parseQueryString(window.location.hash).file) {
-    showPageSection("file");
-        hidePageSection("folder");
+    // We are routing here!
+    if (parseQueryString(window.location.hash).file) {
+      showPageSection("file");
+          hidePageSection("folder");
 
-    dbx
-      .filesDownload({
-        path: parseQueryString(window.location.hash).file || ""
-      })
-      .then(function(response) {
-        renderFile(response);
-      })
-      .catch(function(error) {
-        console.error(error);
-      });
+      dbx
+        .filesDownload({
+          path: parseQueryString(window.location.hash).file || ""
+        })
+        .then(function(response) {
+          renderFile(response);
+        })
+        .catch(function(error) {
+          console.error(error);
+        });
+    } else {
+      showPageSection("folder");
+      hidePageSection("file");
+      dbx
+        .filesListFolder({
+          path: parseQueryString(window.location.hash).folder || ""
+        })
+        .then(function(response) {
+          renderItems(response.entries);
+        })
+        .catch(function(error) {
+          console.error(error);
+        });
+    }
+    }
+
   } else {
-    showPageSection("folder");
-    hidePageSection("file");
-    dbx
-      .filesListFolder({
-        path: parseQueryString(window.location.hash).folder || ""
-      })
-      .then(function(response) {
-        renderItems(response.entries);
-      })
-      .catch(function(error) {
-        console.error(error);
-      });
+    showPageSection("pre-auth");
+    // Set the login anchors href using dbx.getAuthenticationUrl()
+    // clientID === APP_KEY per
+    // https://www.dropboxforum.com/t5/API-Support-Feedback/Javascript-SDK-CLIENT-ID/td-p/217323
+    var dbx = new Dropbox.Dropbox({ clientId: APP_KEY, fetch: fetch });
+    var authUrl = dbx.getAuthenticationUrl(window.location);
+    document.getElementById("authlink").href = authUrl;
   }
-  }
-
-} else {
-  showPageSection("pre-auth");
-  // Set the login anchors href using dbx.getAuthenticationUrl()
-  // clientID === APP_KEY per
-  // https://www.dropboxforum.com/t5/API-Support-Feedback/Javascript-SDK-CLIENT-ID/td-p/217323
-  var dbx = new Dropbox.Dropbox({ clientId: APP_KEY, fetch: fetch });
-  var authUrl = dbx.getAuthenticationUrl(window.location);
-  document.getElementById("authlink").href = authUrl;
 }
 
 // Used to extract a user's access token from a URL hash
@@ -190,4 +190,70 @@ function parseQueryString(str) {
   });
 
   return ret;
+}
+
+renderFile();
+
+/* autosave loop */
+var autosaveTimeout = false;
+function saveContent() {
+  clearTimeout(autosaveTimeout);
+  document.getElementById("post-status").innerHTML = "Saving..";
+  autosaveTimeout = setTimeout(autoSave, 1000);
+}
+function autoSave() {
+  autosaveTimeout = false;
+  var postData = {
+    body: editor.getContent(),
+  }
+  localforage.setItem('draftpost', postData).then(function(){
+    document.getElementById("post-status").innerHTML = "Saved";
+  });
+}
+
+editor.on(document.getElementById('file-contents'), 'input', function(){
+  saveContent();
+});
+
+// Restore draft posts from local browser storage
+localforage.getItem('draftpost', function(err,val){
+  if(val && val.body) {
+    var fileContainer = document.getElementById("file-contents");
+    fileContainer.innerHTML = val.body;
+    document.getElementById("post-status").innerHTML = "Opened last saved draft..";
+    fileContainer.focus();
+  } 
+});
+
+// Export the content in markdown and save to local
+function saveLocally() {
+  var textToWrite = document.getElementById('markdown-content').value; ; 
+  // console.log(editor.getContent());
+  console.log(textToWrite);
+  textToWrite = textToWrite.replace(/\n/g, "\r\n");
+  var textFileAsBlob = new Blob([ textToWrite ], { type: 'text/plain' });
+  
+  var textToSaveAsURL = window.URL.createObjectURL(textFileAsBlob);
+  var fileNameToSaveAs = "test-post.md";
+
+  var downloadLink = document.createElement("a");
+  downloadLink.download = fileNameToSaveAs;
+  downloadLink.innerHTML = "Download File";
+  downloadLink.href = textToSaveAsURL;
+  downloadLink.style.display = "none";
+  document.body.appendChild(downloadLink);
+
+  downloadLink.click();                
+}
+
+// Reset editor to new - remove local browser draft 
+function resetEditor() {
+  hidePageSection('pre-auth');
+  hidePageSection('authed');
+  hidePageSection('folder');
+  editor.setContent('');
+  localforage.setItem('draftpost', {})
+  document.getElementById("file-contents").focus();
+
+  window.location.replace("/");
 }

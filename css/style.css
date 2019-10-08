@@ -1,0 +1,74 @@
+html {
+    height: 100%;
+    font-family: 'Roboto Slab', serif;
+    font-size: 20px;
+    color: #373737;
+}
+div{
+    max-width: 80%;
+    margin: 0 auto;
+    position: relative;
+}
+blockquote{
+    border-left: 1px blue solid;
+    padding-left: 10px;
+}
+
+.toolbar {
+    padding: 13px;
+    top: 0;
+    width: 100%;
+    z-index: 1000;
+}
+.toolbar-left {
+    float: left;
+}
+
+.toolbar-right {
+    float: right;
+    margin-right: 10px;
+}
+.toolbar-left .item {
+    margin-right: 8px;
+    display: inline-block;
+}
+
+.toolbar-left .item.text {
+    color: #ddd;
+    font-size: 16px;
+    padding: 10px 0;
+}
+.toolbar .clear {
+    clear: both;
+}
+
+.btn {
+    height: 30px;
+    width: 100px;
+    -webkit-border-radius: 10px;
+    -moz-border-radius: 10px;
+    border-radius: 10px;
+    display: inline-block;
+    margin: 0 2px;
+    padding: 0 16px;
+    background: rgba(0,0,0,0);
+    font-size: 14px;
+    font-weight: 300;
+    text-decoration: none;
+    text-align: center;
+    border: 0.5px #888 solid;
+    color: #888;
+    vertical-align: middle;
+    cursor: pointer;
+    font-family: 'Roboto Slab', serif;
+    opacity: 0.3;
+    transition: all .3s ease-in-out;
+}
+
+.btn:hover {
+    opacity: 1.0;
+}
+
+#file-contents {
+    margin-top: 10px;
+}

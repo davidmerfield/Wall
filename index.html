@@ -4,10 +4,24 @@
   <script type="text/javascript" src="/dependencies.js"></script>
   <link rel="stylesheet" href="css/medium-editor.min.css">
   <link rel="stylesheet" href="css/themes/default.min.css">
+  <link href="https://fonts.googleapis.com/css?family=Roboto+Slab&display=swap" rel="stylesheet"> 
+  <link rel="stylesheet" href="css/style.css">
   <title>Wall</title>
 </head>
 <body>
-
+  <div class="toolbar">
+      <div class="toolbar-left">
+          <span class="item text"><span id="post-status"></span></span>
+      </div>
+      <div class="toolbar-right">
+        <button class="btn" id="new_btn" onclick="resetEditor()">New</button>
+        <button class="btn" id="export_btn" onclick="saveLocally()">Export</button>
+        <button class="btn" id="publish_btn" onclick="publishToDropbox()">Publish</button>
+      </div>
+      <div class="clear"></div>
+    </div>
+    <div id="file-contents" class="editable" style="display: none;" role="textbox" data-placeholder="Write something nice..." contenteditable="true"></div>
+    <textarea id="markdown-content" type="textarea" class="markdown" style="display: none;"/></textarea>
     <div id="pre-auth" style="display:none;">
       <p>Hello, please connect to Dropbox to link your files:</p>
       <a href="" id="authlink" class="button">Authenticate</a>
@@ -18,13 +32,10 @@
       <p>Welcome! <a href="#" onclick="logOut()">Log out</a></p>
       <hr>
       <div id="folder" style="display:none;">
-        <p><a href="/">Home</a> <a href="#" onclick="newPost();">New</a> Below are the contents of directory:</p>
+        <p>Below are the contents of directory:</p>
         <ul id="files"></ul>
       </div>
       <div id="file" style="display:none;">
-        <p><a href="/">Home</a> Below are the contents of the file:</p>
-        <textarea id="markdown-content" type="textarea" class="markdown" style="display: none"/></textarea>
-        <div id="file-contents" class="editable"></div>
       </div>
 
     </div>
