@@ -12,14 +12,15 @@
   <div class="toolbar">
       <div class="toolbar-left">
           <span class="item text"><span id="post-status"></span></span>
+          <span class="item text"><span id="post-wc"></span></span>
       </div>
       <div class="toolbar-right">
         <button class="btn" id="new_btn" onclick="resetEditor()">New</button>
         <button class="btn" id="export_btn" onclick="saveLocally()">Export</button>
         <button class="btn" id="publish_btn" onclick="publishToDropbox()">Publish</button>
-      </div>
+      </div>      
       <div class="clear"></div>
-    </div>
+    </div>   
     <div id="file-contents" class="editable" style="display: none;" role="textbox" data-placeholder="Write something nice..." contenteditable="true"></div>
     <textarea id="markdown-content" type="textarea" class="markdown" style="display: none;"/></textarea>
     <div id="pre-auth" style="display:none;">
@@ -39,7 +40,6 @@
       </div>
 
     </div>
-
     <script type="text/javascript" src="/app.js"></script>
 </body>
 </html>

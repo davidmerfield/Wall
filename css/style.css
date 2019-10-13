@@ -1,8 +1,19 @@
+:root {
+    --font-color: #373737;
+    --bg-color: #f3f3f3;
+}
+  
+[data-theme="dark"] {
+    --font-color: #f3f3f3;
+    --bg-color: #373737;
+}
+
 html {
     height: 100%;
     font-family: 'Roboto Slab', serif;
     font-size: 20px;
-    color: #373737;
+    color: var(--font-color);
+    background-color: var(--bg-color);
 }
 div{
     max-width: 80%;
@@ -15,10 +26,13 @@ blockquote{
 }
 
 .toolbar {
+    background-color: var(--bg-color);
     padding: 13px;
     top: 0;
     width: 100%;
     z-index: 1000;
+    position: -webkit-sticky; 
+    position: sticky;
 }
 .toolbar-left {
     float: left;
@@ -34,9 +48,10 @@ blockquote{
 }
 
 .toolbar-left .item.text {
-    color: #ddd;
+    color: #888;
     font-size: 16px;
     padding: 10px 0;
+    opacity: 0.3;
 }
 .toolbar .clear {
     clear: both;

@@ -199,15 +199,26 @@ var autosaveTimeout = false;
 function saveContent() {
   clearTimeout(autosaveTimeout);
   document.getElementById("post-status").innerHTML = "Saving..";
+  var postContent = document.getElementById('markdown-content').value;
+  document.getElementById("post-wc").innerHTML = "Word Count: " + countWords(postContent);
+
   autosaveTimeout = setTimeout(autoSave, 1000);
 }
+
+function countWords(str){
+  str = str.replace(/(^\s*)|(\s*$)/gi,"") // handle start and end whitespaces
+        .replace(/[ ]{2,}/gi," ") // merge multiple spaces to 1
+        .replace(/\n /,"\n"); // handle newlines
+  return str.split(' ').filter(function(s){return s != "";}).length;
+}
+
 function autoSave() {
   autosaveTimeout = false;
   var postData = {
     body: editor.getContent(),
   }
   localforage.setItem('draftpost', postData).then(function(){
-    document.getElementById("post-status").innerHTML = "Saved";
+    document.getElementById("post-status").innerHTML = "Saved.";
   });
 }
 
@@ -227,7 +238,7 @@ localforage.getItem('draftpost', function(err,val){
 
 // Export the content in markdown and save to local
 function saveLocally() {
-  var textToWrite = document.getElementById('markdown-content').value; ; 
+  var textToWrite = document.getElementById('markdown-content').value; 
   // console.log(editor.getContent());
   console.log(textToWrite);
   textToWrite = textToWrite.replace(/\n/g, "\r\n");
