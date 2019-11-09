@@ -1,12 +1,13 @@
 :root {
     --font-color: #373737;
-    --bg-color: #f3f3f3;
+    --bg-color: #fff;
 }
   
 [data-theme="dark"] {
     --font-color: #f3f3f3;
     --bg-color: #373737;
 }
+
 
 html {
     height: 100%;
@@ -15,8 +16,10 @@ html {
     color: var(--font-color);
     background-color: var(--bg-color);
 }
+
+
 div{
-    max-width: 80%;
+    max-width: 40rem;
     margin: 0 auto;
     position: relative;
 }
@@ -86,4 +89,8 @@ blockquote{
 
 #file-contents {
     margin-top: 10px;
+}
+
+[contenteditable="true"]:focus {
+    outline: none;
 }
