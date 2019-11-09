@@ -89,3 +89,11 @@ blockquote{
 #file-contents {
     margin-top: 10px;
 }
+
+input:focus,
+select:focus,
+textarea:focus,
+button:focus,
+[contenteditable="true"]:focus {
+    outline: none;
+}
