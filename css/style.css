@@ -8,6 +8,7 @@
     --bg-color: #373737;
 }
 
+
 html {
     height: 100%;
     font-family: 'Roboto Slab', serif;
@@ -90,10 +91,6 @@ blockquote{
     margin-top: 10px;
 }
 
-input:focus,
-select:focus,
-textarea:focus,
-button:focus,
 [contenteditable="true"]:focus {
     outline: none;
 }
