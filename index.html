@@ -15,29 +15,32 @@
           <span class="item text"><span id="post-wc"></span></span>
       </div>
       <div class="toolbar-right">
-        <button class="btn" id="new_btn" onclick="resetEditor()">New</button>
-        <button class="btn" id="export_btn" onclick="saveLocally()">Export</button>
-        <button class="btn" id="publish_btn" onclick="publishToDropbox()">Publish</button>
+        <div class="unauthed" style="display:none;">
+          <a href="" id="authlink" class="button">Connect to Dropbox</a>
+        </div>
+        <div class="authed">
+          <div class="directory-selected">
+            <button class="btn" id="new_btn" onclick="resetEditor()">New</button>
+            <button class="btn" id="export_btn" onclick="saveLocally()">Export</button>
+            <button class="btn" id="publish_btn" onclick="publishToDropbox()">Publish</button>
+          </div>
+          <div class="select-directory">
+            <button class="btn" id="new_btn" onclick="resetEditor()">Select folder</button>
+          </div>
+          <a href="#" onclick="logOut()">Log out</a>
+        </div>
       </div>      
       <div class="clear"></div>
     </div>   
     <div id="file-contents" class="editable" style="display: none;" role="textbox" data-placeholder="Write something nice..." contenteditable="true"></div>
     <textarea id="markdown-content" type="textarea" class="markdown" style="display: none;"/></textarea>
-    <div id="pre-auth" style="display:none;">
-      <p>Hello, please connect to Dropbox to link your files:</p>
-      <a href="" id="authlink" class="button">Authenticate</a>
-      <p class="info">Once authenticated, it will use the access token to list the files in your root directory.</p>
-    </div>
-
-    <div id="authed" style="display:none;">
-      <p>Welcome! <a href="#" onclick="logOut()">Log out</a></p>
-      <hr>
+    
+    <div id="publish" style="display:none;">
       <div id="folder" style="display:none;">
         <p>Below are the contents of directory:</p>
         <ul id="files"></ul>
       </div>
-      <div id="file" style="display:none;">
-      </div>
+
 
     </div>
     <script type="text/javascript" src="/app.js"></script>
