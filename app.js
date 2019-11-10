@@ -268,3 +268,13 @@ function resetEditor() {
 
   window.location.replace("/");
 }
+
+// Add overlay modal for capturing title/tags
+function openModal() {
+  document.getElementById('modal').classList.add('opened');
+  document.getElementById('post-title').focus();
+}
+
+function closeModal() {
+  document.getElementById('modal').classList.remove('opened');
+}
