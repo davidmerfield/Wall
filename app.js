@@ -1,5 +1,8 @@
 var APP_KEY = "zl0msi8kqsftxc5";
 
+var DEFAULT_POST_PATH = "/Apps/Blot";
+localStorage.setItem("wall-post-path", DEFAULT_POST_PATH);
+
 var markdownEditor = document.querySelector(".markdown");
 var editor = new MediumEditor('.editable',
       { placeholder: false,
@@ -26,6 +29,7 @@ function getAccessToken() {
 }
 
 function logOut() {
+  hidePageSection("logout_btn");
   localStorage.setItem("access_token", "");
   window.location = window.location;
 }
@@ -87,6 +91,39 @@ function renderItems(items) {
     filesContainer.appendChild(li);
   });
 }
+
+function getPostPath() {
+  return localStorage.getItem("wall-post-path");
+}
+
+function getPostFileName() {
+  return Date.now() + '.md'
+}
+
+function getPostMetadata() {
+  var metadata = '';
+  var titleMetadata = document.getElementById('post-title').value;
+  var tagsMetadata = document.getElementById('post-tags').value;
+  if (titleMetadata) {
+    metadata = metadata + 'title : ' +  document.getElementById('post-title').value + '\n';
+  }
+  if (tagsMetadata) {
+    metadata = metadata + 'tags : ' + document.getElementById('post-tags').value + '\n';
+  }
+  return metadata;
+}
+
+function getPostBody() {
+  return document.getElementById('markdown-content').value; 
+}
+
+function getContent() {
+  var metadata = getPostMetadata();
+  var content = getPostBody();
+
+  return [metadata, content].filter(value => !!value).join('\n');
+}
+
 // This example keeps both the authenticate and non-authenticated setions
 // in the DOM and uses this function to show/hide the correct section.
 function showPageSection(elementId) {
@@ -97,60 +134,23 @@ function hidePageSection(elementId) {
   document.getElementById(elementId).style.display = "none";
 }
 
-function publishToDropbox(){
-  if (isAuthenticated()) {
-    showPageSection("authed");
-
+function publishToDropbox() {
     // Create an instance of Dropbox with the access token and use it to
     // fetch and render the files in the users root directory.
-    var dbx = new Dropbox.Dropbox({ accessToken: getAccessToken(), fetch: fetch });
-
-    window.onhashchange = router;
-
-    router();
-
-    function router () {
-
-    // We are routing here!
-    if (parseQueryString(window.location.hash).file) {
-      showPageSection("file");
-          hidePageSection("folder");
-
-      dbx
-        .filesDownload({
-          path: parseQueryString(window.location.hash).file || ""
-        })
-        .then(function(response) {
-          renderFile(response);
-        })
-        .catch(function(error) {
-          console.error(error);
-        });
-    } else {
-      showPageSection("folder");
-      hidePageSection("file");
-      dbx
-        .filesListFolder({
-          path: parseQueryString(window.location.hash).folder || ""
-        })
-        .then(function(response) {
-          renderItems(response.entries);
-        })
-        .catch(function(error) {
-          console.error(error);
-        });
-    }
-    }
-
-  } else {
-    showPageSection("pre-auth");
-    // Set the login anchors href using dbx.getAuthenticationUrl()
-    // clientID === APP_KEY per
-    // https://www.dropboxforum.com/t5/API-Support-Feedback/Javascript-SDK-CLIENT-ID/td-p/217323
-    var dbx = new Dropbox.Dropbox({ clientId: APP_KEY, fetch: fetch });
-    var authUrl = dbx.getAuthenticationUrl(window.location);
-    document.getElementById("authlink").href = authUrl;
-  }
+    hidePageSection("meta-form");
+    showPageSection("authed");
+    var dbx = new Dropbox.Dropbox({ accessToken: getAccessToken() });
+    dbx
+    .filesUpload({ path: getPostPath() + '/' + getPostFileName(), 
+        contents: getContent(), mode: 'add' })
+    .then(function (response) {
+      console.log('Post file uploaded at ' + response.path_lower);
+      closeModal();
+      resetEditor();
+    })
+    .catch(function(error) {
+      console.error('Failed to upload the post file' + error);
+    });
 }
 
 // Used to extract a user's access token from a URL hash
@@ -236,6 +236,10 @@ localforage.getItem('draftpost', function(err,val){
   } 
 });
 
+if(isAuthenticated()) {
+  document.getElementById("logout_btn").style.display = "inline";
+}
+
 // Export the content in markdown and save to local
 function saveLocally() {
   var textToWrite = document.getElementById('markdown-content').value; 
@@ -272,7 +276,19 @@ function resetEditor() {
 // Add overlay modal for capturing title/tags
 function openModal() {
   document.getElementById('modal').classList.add('opened');
-  document.getElementById('post-title').focus();
+  if (isAuthenticated()) {
+    showPageSection("meta-form");  
+    document.getElementById('post-title').focus();
+  } else {
+    hidePageSection("meta-form");
+    showPageSection("pre-auth");
+    // Set the login anchors href using dbx.getAuthenticationUrl()
+    // clientID === APP_KEY per
+    // https://www.dropboxforum.com/t5/API-Support-Feedback/Javascript-SDK-CLIENT-ID/td-p/217323
+    var dbx = new Dropbox.Dropbox({ clientId: APP_KEY, fetch: fetch });
+    var authUrl = dbx.getAuthenticationUrl(window.location);
+    document.getElementById("authlink").href = authUrl;
+  }    
 }
 
 function closeModal() {
