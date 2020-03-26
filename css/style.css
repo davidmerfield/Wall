@@ -8,7 +8,6 @@
     --bg-color: #373737;
 }
 
-
 html {
     height: 100%;
     font-family: 'Roboto Slab', serif;
@@ -16,10 +15,8 @@ html {
     color: var(--font-color);
     background-color: var(--bg-color);
 }
-
-
 div{
-    max-width: 40rem;
+    max-width: 80%;
     margin: 0 auto;
     position: relative;
 }
@@ -33,7 +30,7 @@ blockquote{
     padding: 13px;
     top: 0;
     width: 100%;
-    z-index: 1000;
+    z-index: 10;
     position: -webkit-sticky; 
     position: sticky;
 }
@@ -93,4 +90,94 @@ blockquote{
 
 [contenteditable="true"]:focus {
     outline: none;
+}
+
+.modal:before {
+    content: "";
+    display: none;
+    background: var(--bg-color);
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 10;
+}
+.opened:before {
+    display: block;
+}
+.opened .modal-dialog {
+    transform: translate(0, 0);
+    top: 20%;
+}
+.modal-dialog {
+    background: #fefefe;
+    border: #333333 solid 0px;
+    border-radius: 5px;
+    margin-left: -200px;
+    position: fixed;
+    left: 25%;
+    top: -100%;
+    z-index: 11;
+    width: 80%;
+    box-shadow:0 5px 10px rgba(0,0,0,0.3);
+    transition: transform 0.3s ease-out;
+}
+.modal-body {
+    padding: 20px;
+}
+.modal-body input{
+    width:600px;
+    font-family: 'Roboto Slab';
+    padding:20px 0;
+    border: none;
+    outline:0;
+    font-weight: 400;
+    margin-top: 10px;
+}
+.modal-header,
+.modal-footer {
+    padding: 5px 5px;
+}
+.modal-header {
+    color: var(--font-color);
+    font-size: 22px;
+    font-weight: 600;
+    /*border-bottom: #eeeeee solid 1px;*/
+}
+.modal-header h2 {
+    font-size: 20px;
+}
+#post-title{
+    font-size: 20px;
+    color: var(--font-color);
+}
+
+#post-tags{
+    font-size:16px;
+    color: #888;
+}
+.btn-close {
+    color: #e60023;
+    font-size: 30px;
+    text-decoration: none;
+    position: absolute;
+    right: 10px;
+}
+.btn-close:hover {
+    color: #333;
+}
+.publishBtn {
+    background: mediumseagreen;
+    border-radius: 3px;
+    color: #fff;
+    display: inline-block;
+    font-size: 16px;
+    padding: 10px 20px;
+    margin-bottom: 20px;
+    text-decoration: none;
+    text-align: center;
+    min-width: 60px;
+    position: relative;
+    transition: color .1s ease;
 }
