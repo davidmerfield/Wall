@@ -12,6 +12,7 @@
   <div class="toolbar">
       <div class="toolbar-left">
           <span class="item text"><span id="post-status"></span></span>
+          <span class="item text"><span id="post-cc"></span></span>
           <span class="item text"><span id="post-wc"></span></span>
       </div>
       <div class="toolbar-right">
@@ -32,6 +33,17 @@
           <input type="text" name="title" id="post-title" placeholder="Title" size="400" /><br>
           <input type="text" name="tags" id="post-tags" placeholder="Tags, comma separated" size="400" />
           <div class="modal-footer">
+            <p class="post-info">Post will be published to
+              <span id="post-path-display">
+                <span id="post-path" style="color: #0091D5;"></span>
+                <a href="#" class="min-action" onclick="changePostpath()">Change</a>
+              </span>
+              <span id="post-path-selection" style="display: none;">
+                <input type="text" id="post-path-fixed" class="post-meta" disabled />
+                <input type="text" id="post-path-input" class="post-meta"/>
+                <a href="#" class="min-action" onclick="savePostpath()">Save</a>
+              </span>
+            </p>
             <a href="#" class="publishBtn" onclick="publishToDropbox()">Publish now</a>
           </div>
         </div>
