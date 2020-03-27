@@ -1,7 +1,9 @@
 var APP_KEY = "zl0msi8kqsftxc5";
 
 var DEFAULT_POST_PATH = "/Apps/Blot";
-localStorage.setItem("wall-post-path", DEFAULT_POST_PATH);
+if(!localStorage.getItem("wall-post-path")) {
+  localStorage.setItem("wall-post-path", DEFAULT_POST_PATH);
+}
 
 var markdownEditor = document.querySelector(".markdown");
 var editor = new MediumEditor('.editable',
@@ -94,6 +96,21 @@ function renderItems(items) {
 
 function getPostPath() {
   return localStorage.getItem("wall-post-path");
+}
+
+function changePostpath() {
+  hidePageSection("post-path-display");
+  document.getElementById("post-path-selection").style.display = "inline";
+  document.getElementById("post-path-fixed").value = DEFAULT_POST_PATH + "/";
+  document.getElementById("post-path-input").focus();
+}
+
+function savePostpath() {
+  localStorage.setItem("wall-post-path", DEFAULT_POST_PATH + "/" 
+        + document.getElementById('post-path-input').value);
+  document.getElementById('post-path').innerHTML = getPostPath();
+  document.getElementById("post-path-display").style.display = "inline";
+  hidePageSection("post-path-selection");
 }
 
 function getPostFileName() {
@@ -201,6 +218,7 @@ function saveContent() {
   document.getElementById("post-status").innerHTML = "Saving..";
   var postContent = document.getElementById('markdown-content').value;
   document.getElementById("post-wc").innerHTML = "Word Count: " + countWords(postContent);
+  document.getElementById("post-cc").innerHTML = "Character Count: " + postContent.length;
 
   autosaveTimeout = setTimeout(autoSave, 1000);
 }
@@ -277,7 +295,8 @@ function resetEditor() {
 function openModal() {
   document.getElementById('modal').classList.add('opened');
   if (isAuthenticated()) {
-    showPageSection("meta-form");  
+    document.getElementById('post-path').innerHTML = getPostPath();
+    showPageSection("meta-form");
     document.getElementById('post-title').focus();
   } else {
     hidePageSection("meta-form");
