@@ -134,6 +134,9 @@ function getPostMetadata() {
   if (tagsMetadata) {
     metadata = metadata + 'tags : ' + document.getElementById('post-tags').value + '\n';
   }
+  let today = new Date();
+  metadata += 'date : ' + today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate() +
+      ' ' + today.getHours() + ':' + today.getMinutes() + '\n';
   return metadata;
 }
 
